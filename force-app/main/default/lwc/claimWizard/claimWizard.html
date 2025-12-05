@@ -1,0 +1,98 @@
+<template>
+  <lightning-card title="New Home Insurance Claim Declaration" icon-name="standard:case">
+
+    <div class="slds-m-around_medium">
+      <lightning-progress-indicator current-step={currentStep} type="path">
+        <lightning-progress-step label="Contract & Property" value="1"></lightning-progress-step>
+        <lightning-progress-step label="Claim Details" value="2"></lightning-progress-step>
+        <lightning-progress-step label="Expert Scheduling" value="3"></lightning-progress-step>
+      </lightning-progress-indicator>
+    </div>
+
+    <div class="slds-p-horizontal_large">
+
+      <template if:true={isStep1}>
+        <div class="slds-grid slds-gutters">
+          <div class="slds-col slds-size_1-of-2">
+            <lightning-input label="Policy Number" value={contractNumInput} onchange={handleInputChange}
+              data-name="contractNumInput" placeholder="E.g., 00000101"></lightning-input>
+            <br />
+            <lightning-button label="Verify" onclick={searchContract} variant="brand"></lightning-button>
+          </div>
+        </div>
+
+        <template if:true={contractData}>
+          <div class="slds-box slds-theme_shade slds-m-top_medium">
+            <h3 class="slds-text-heading_small">📋 Contract Info</h3>
+            <div class="slds-grid slds-gutters slds-m-top_small">
+              <div class="slds-col">
+                <p><strong>Client:</strong> {contractData.AccountName}</p>
+                <p><strong>Dates:</strong> {contractData.StartDate} to {contractData.EndDate}</p>
+              </div>
+              <div class="slds-col">
+                <p><strong>🏠 Assured Property:</strong> {contractData.PropertyName}</p>
+                <p><strong>Type:</strong> {contractData.PropertyType}</p>
+                <p><strong>Address:</strong> {contractData.PropertyAddress}</p>
+              </div>
+            </div>
+          </div>
+        </template>
+      </template>
+
+      <template if:true={isStep2}>
+        <div class="slds-grid slds-gutters">
+          <div class="slds-col slds-size_1-of-2">
+            <lightning-input type="date" label="Incident Date" value={claimData.Incident_Date__c}
+              onchange={handleClaimField} data-field="Incident_Date__c" required></lightning-input>
+
+            <lightning-combobox label="Incident Type" value={claimData.Incident_Type__c} options={typeOptions}
+              onchange={handleClaimField} data-field="Incident_Type__c" required></lightning-combobox>
+
+            <lightning-combobox label="Priority" value={claimData.Priority__c} options={priorityOptions}
+              onchange={handleClaimField} data-field="Priority__c"></lightning-combobox>
+          </div>
+          <div class="slds-col slds-size_1-of-2">
+            <lightning-textarea label="Detailed Description" value={claimData.Description__c}
+              onchange={handleClaimField} data-field="Description__c" required class="slds-h-full"></lightning-textarea>
+          </div>
+        </div>
+      </template>
+
+      <template if:true={isStep3}>
+        <div class="slds-text-align_center slds-m-bottom_medium">
+          <h2 class="slds-text-heading_medium">Expertise Scheduling</h2>
+        </div>
+
+        <div class="slds-grid slds-gutters">
+          <div class="slds-col">
+            <lightning-input type="datetime" label="Desired Date and Time" onchange={handleDateChange}
+              required></lightning-input>
+          </div>
+          <div class="slds-col">
+            <template if:true={expertsList}>
+              <lightning-combobox label="Available Experts" options={expertsList} onchange={handleExpertSelect}
+                placeholder="Select an expert..."></lightning-combobox>
+            </template>
+            <template if:false={expertsList}>
+              <p class="slds-m-top_large slds-text-color_weak">Please choose a date to check availability.</p>
+            </template>
+          </div>
+        </div>
+      </template>
+
+      <div class="slds-m-top_large slds-align_absolute-center">
+        <lightning-button label="Previous" onclick={goBack} disabled={isStep1}
+          class="slds-m-right_small"></lightning-button>
+
+        <template if:false={isStep3}>
+          <lightning-button label="Next" onclick={goNext} variant="brand" disabled={disableNext}></lightning-button>
+        </template>
+
+        <template if:true={isStep3}>
+          <lightning-button label="Validate & Create Claim" onclick={saveAll} variant="success"></lightning-button>
+        </template>
+      </div>
+
+    </div>
+  </lightning-card>
+</template>
