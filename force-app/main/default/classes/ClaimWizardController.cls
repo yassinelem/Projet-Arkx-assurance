@@ -37,7 +37,7 @@ public with sharing class ClaimWizardController {
       try {
          newClaim.Expert_Appointment_Time__c = appointmentDate;
          newClaim.Property_Address__c = locationAddress;
-            
+         newClaim.Status__c ='New';
             insert newClaim;
 
             if(expertId != null && appointmentDate != null) {
